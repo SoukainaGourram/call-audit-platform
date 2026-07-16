@@ -1,4 +1,4 @@
-package ma.emsi.history_service;
+package com.example.history_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package ma.emsi.history_service;
+package com.example.history_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
