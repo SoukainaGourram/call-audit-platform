@@ -1,2 +1,2 @@
 # plateforme-historique-appels
-Plateforme de gestion de l'historique des appels - Stage EMSI
+Plateforme de gestion de l'historique des appels - 
