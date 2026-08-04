@@ -22,19 +22,24 @@ public class UserService {
 
     public User register(RegisterRequest request) {
 
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (request == null || isBlank(request.getUsername()) || isBlank(request.getPassword())
+                || isBlank(request.getFullName()) || isBlank(request.getEmail())) {
+            throw new IllegalArgumentException("Tous les champs sont obligatoires");
+        }
+
+        if (userRepository.existsByUsername(request.getUsername().trim())) {
             throw new RuntimeException("Nom d'utilisateur déjà utilisé");
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail().trim())) {
             throw new RuntimeException("Email déjà utilisé");
         }
 
         User user = new User();
 
-        user.setUsername(request.getUsername());
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername().trim());
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(request.getEmail().trim());
 
         // Chiffrement du mot de passe
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -44,6 +49,10 @@ public class UserService {
         user.setEnabled(true);
 
         return userRepository.save(user);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
 }
