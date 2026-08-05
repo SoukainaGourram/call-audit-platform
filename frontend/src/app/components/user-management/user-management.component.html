@@ -1,0 +1,136 @@
+<div class="page-container">
+  <div class="header-section">
+    <div>
+      <h1>Gestion des Utilisateurs (Admin)</h1>
+      <p class="subtitle">Créez, modifiez, désactivez ou supprimez des comptes utilisateurs</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      ➕ Ajouter un Utilisateur
+    </button>
+  </div>
+
+  <div *ngIf="successMsg" class="alert alert-success animate-fade">
+    ✅ {{ successMsg }}
+  </div>
+
+  <div class="table-card glass-panel">
+    <div class="table-header">
+      <h3>Liste des comptes enregistrés</h3>
+      <span class="count-badge">{{ users.length }} compte(s)</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <div *ngIf="!loading && users.length === 0" class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h4>Aucun utilisateur trouvé</h4>
+    </div>
+
+    <div *ngIf="!loading && users.length > 0" class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Nom Complet</th>
+            <th>Nom d'utilisateur</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of users">
+            <td><strong>{{ u.fullName }}</strong></td>
+            <td><code>{{ u.username }}</code></td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="role-badge" [ngClass]="u.role === 'ADMIN' ? 'role-admin' : 'role-user'">
+                {{ u.role === 'ADMIN' ? '👑 ADMIN' : '👤 USER' }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="u.enabled ? 'status-active' : 'status-disabled'">
+                {{ u.enabled ? '🟢 Actif' : '🔴 Désactivé' }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  class="btn-icon" 
+                  [title]="u.enabled ? 'Désactiver le compte' : 'Activer le compte'"
+                  (click)="toggleStatus(u)">
+                  {{ u.enabled ? '🔒' : '🔓' }}
+                </button>
+                <button class="btn-icon" title="Modifier" (click)="openEditModal(u)">
+                  ✏️
+                </button>
+                <button class="btn-icon btn-danger-icon" title="Supprimer" (click)="deleteUser(u)">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Modale de création / modification -->
+  <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-card glass-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editMode ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}</h3>
+        <button class="close-btn" (click)="closeModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="saveUser()" class="modal-form">
+        <div *ngIf="errorMsg" class="alert alert-error">
+          {{ errorMsg }}
+        </div>
+
+        <div class="form-group">
+          <label>Nom d'utilisateur</label>
+          <input type="text" [(ngModel)]="currentUserForm.username" name="username" [disabled]="editMode" required />
+        </div>
+
+        <div class="form-group">
+          <label>Nom Complet</label>
+          <input type="text" [(ngModel)]="currentUserForm.fullName" name="fullName" required />
+        </div>
+
+        <div class="form-group">
+          <label>Adresse Email</label>
+          <input type="email" [(ngModel)]="currentUserForm.email" name="email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Mot de passe {{ editMode ? '(laisser vide si inchangé)' : '' }}</label>
+          <input type="password" [(ngModel)]="currentUserForm.password" name="password" [required]="!editMode" />
+        </div>
+
+        <div class="form-group">
+          <label>Rôle</label>
+          <select [(ngModel)]="currentUserForm.role" name="role" class="select-input">
+            <option value="USER">USER (Agent)</option>
+            <option value="ADMIN">ADMIN (Administrateur)</option>
+          </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="currentUserForm.enabled" name="enabled" />
+            Compte actif
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="page-container">
+  <div class="header-section">
+    <div>
+      <h1>Traçabilité des Recherches (Audit Logs)</h1>
+      <p class="subtitle">Historique automatique de chaque recherche effectuée sur la plateforme</p>
+    </div>
+    <button class="btn btn-secondary" (click)="loadLogs()">🔄 Actualiser</button>
+  </div>
+
+  <div class="table-card glass-panel">
+    <div class="table-header">
+      <h3>Journal d'Audit</h3>
+      <span class="count-badge">{{ logs.length }} recherche(s) consignée(s)</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Chargement du journal d'audit...</p>
+    </div>
+
+    <div *ngIf="!loading && logs.length === 0" class="empty-state">
+      <div class="empty-icon">📜</div>
+      <h4>Aucune recherche enregistrée</h4>
+      <p>L'historique des recherches est actuellement vide.</p>
+    </div>
+
+    <div *ngIf="!loading && logs.length > 0" class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Utilisateur</th>
+            <th>Numéro Recherché</th>
+            <th>Date & Heure de Recherche</th>
+            <th>Résultats Renvoyés</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logs">
+            <td>#{{ log.id }}</td>
+            <td>
+              <span class="user-chip">
+                👤 <strong>{{ log.username }}</strong>
+              </span>
+            </td>
+            <td>
+              <span class="searched-number">{{ log.searchedNumber }}</span>
+            </td>
+            <td>{{ log.searchTimestamp | date:'dd/MM/yyyy à HH:mm:ss' }}</td>
+            <td>
+              <span class="result-badge" [ngClass]="log.resultCount > 0 ? 'badge-success' : 'badge-warning'">
+                {{ log.resultCount }} appel(s)
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<div class="page-container">
+  <div class="header-section">
+    <div>
+      <h1>Recherche & Historique des Appels</h1>
+      <p class="subtitle">Consultez les enregistrements d'appels avec masquage automatique de confidentialité</p>
+    </div>
+    <div class="privacy-badge">
+      <span class="shield-icon">🛡️</span> Masquage RGPD Activé (ex: 06*****67)
+    </div>
+  </div>
+
+  <div *ngIf="loggedSearchAlert" class="alert alert-success animate-fade">
+    ✅ Recherche sur <strong>{{ lastSearchedNumber }}</strong> enregistrée automatiquement dans la traçabilité.
+  </div>
+
+  <div class="search-card glass-panel">
+    <form (ngSubmit)="onSearch()" class="search-form">
+      <div class="search-input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          name="searchQuery" 
+          placeholder="Rechercher par numéro (ex: 0661234567, 0655443322)..." 
+          class="search-input"
+        />
+        <button *ngIf="searchQuery" type="button" class="btn-clear" (click)="resetSearch()">✕</button>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        🔍 Rechercher
+      </button>
+    </form>
+
+    <div class="quick-samples">
+      <span>Numéros de test :</span>
+      <button class="chip" (click)="quickSearch('0661234567')">0661234567</button>
+      <button class="chip" (click)="quickSearch('0655443322')">0655443322</button>
+      <button class="chip" (click)="quickSearch('0522998877')">0522998877</button>
+      <button class="chip" (click)="quickSearch('0667890123')">0667890123</button>
+    </div>
+  </div>
+
+  <div class="table-card glass-panel">
+    <div class="table-header">
+      <h3>
+        <span *ngIf="!hasSearched">Tous les appels récents</span>
+        <span *ngIf="hasSearched">Résultats pour "{{ lastSearchedNumber }}" ({{ calls.length }})</span>
+      </h3>
+      <span class="count-badge">{{ calls.length }} enregistrement(s)</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Chargement des enregistrements d'appels...</p>
+    </div>
+
+    <div *ngIf="!loading && calls.length === 0" class="empty-state">
+      <div class="empty-icon">📱</div>
+      <h4>Aucun appel trouvé</h4>
+      <p>Aucun enregistrement ne correspond au numéro de téléphone recherché.</p>
+    </div>
+
+    <div *ngIf="!loading && calls.length > 0" class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Numéro Appelant</th>
+            <th>Numéro Appelé</th>
+            <th>Date & Heure</th>
+            <th>Durée</th>
+            <th>Ville</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let call of calls">
+            <td>
+              <span class="type-badge" [ngClass]="call.type ? call.type.toLowerCase() : 'outgoing'">
+                <span *ngIf="call.type === 'INCOMING'">↙ Entrant</span>
+                <span *ngIf="call.type === 'OUTGOING'">↗ Sortant</span>
+                <span *ngIf="call.type === 'MISSED'">⚠️ Manqué</span>
+              </span>
+            </td>
+            <td>
+              <span class="phone-masked">{{ call.caller }}</span>
+            </td>
+            <td>
+              <span class="phone-masked">{{ call.callee }}</span>
+            </td>
+            <td>{{ call.startedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td><strong>{{ call.duration }}</strong></td>
+            <td>{{ call.location || 'Maroc' }}</td>
+            <td>
+              <span class="status-pill" [ngClass]="call.status === 'MANQUE' ? 'status-danger' : 'status-success'">
+                {{ call.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

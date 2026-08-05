@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inwi-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inwi-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: inwi-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/authdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgrespassword
+      - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - USER_SERVICE_URL=http://user-service:8082
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inwi-network
+
+  user-service:
+    build: ./user-service
+    container_name: inwi-user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/userdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgrespassword
+      - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inwi-network
+
+  call-history-service:
+    build: ./call-history-service
+    container_name: inwi-call-history-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/callhistorydb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgrespassword
+      - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SEARCH_HISTORY_SERVICE_URL=http://search-history-service:8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inwi-network
+
+  search-history-service:
+    build: ./search-history-service
+    container_name: inwi-search-history-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/searchhistorydb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgrespassword
+      - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inwi-network
+
+  frontend:
+    build: ./frontend
+    container_name: inwi-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - auth-service
+      - user-service
+      - call-history-service
+      - search-history-service
+    networks:
+      - inwi-network
+
+networks:
+  inwi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,91 @@
+package com.example.user_service.service;
+
+import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.example.user_service.entity.UserProfile;
+import com.example.user_service.repository.UserProfileRepository;
+
+@Service
+public class UserProfileService {
+
+    private final UserProfileRepository repository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserProfileService(UserProfileRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<UserProfile> findAll() {
+        return repository.findAll();
+    }
+
+    public UserProfile findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec l'ID : " + id));
+    }
+
+    public UserProfile findByUsername(String username) {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable : " + username));
+    }
+
+    public UserProfile save(UserProfile profile) {
+        if (profile.getId() == null) {
+            if (repository.existsByUsername(profile.getUsername())) {
+                throw new RuntimeException("Le nom d'utilisateur existe déjà");
+            }
+            if (repository.existsByEmail(profile.getEmail())) {
+                throw new RuntimeException("L'adresse email existe déjà");
+            }
+            if (profile.getPassword() != null && !profile.getPassword().startsWith("$2a$")) {
+                profile.setPassword(passwordEncoder.encode(profile.getPassword()));
+            }
+        }
+        return repository.save(profile);
+    }
+
+    public UserProfile update(Long id, UserProfile updatedProfile) {
+        UserProfile existing = findById(id);
+        existing.setFullName(updatedProfile.getFullName());
+        existing.setEmail(updatedProfile.getEmail());
+        if (updatedProfile.getRole() != null) {
+            existing.setRole(updatedProfile.getRole());
+        }
+        existing.setEnabled(updatedProfile.isEnabled());
+        if (updatedProfile.getPassword() != null && !updatedProfile.getPassword().trim().isEmpty()) {
+            existing.setPassword(passwordEncoder.encode(updatedProfile.getPassword()));
+        }
+        return repository.save(existing);
+    }
+
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Utilisateur introuvable");
+        }
+        repository.deleteById(id);
+    }
+
+    public UserProfile toggleEnabled(Long id) {
+        UserProfile profile = findById(id);
+        profile.setEnabled(!profile.isEnabled());
+        return repository.save(profile);
+    }
+
+    public UserProfile updateProfile(String username, String fullName, String email) {
+        UserProfile profile = findByUsername(username);
+        profile.setFullName(fullName);
+        profile.setEmail(email);
+        return repository.save(profile);
+    }
+
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        UserProfile profile = findByUsername(username);
+        if (!passwordEncoder.matches(oldPassword, profile.getPassword())) {
+            throw new RuntimeException("L'ancien mot de passe est incorrect");
+        }
+        profile.setPassword(passwordEncoder.encode(newPassword));
+        repository.save(profile);
+    }
+}
