@@ -1,4 +1,4 @@
-# Plateforme Historique Appels — Inwi
+# Plateforme Historique Appels 
 
 Plateforme sécurisée de consultation de l'historique des appels téléphoniques (architecture microservices).
 
