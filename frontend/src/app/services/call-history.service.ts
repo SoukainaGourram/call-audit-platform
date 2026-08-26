@@ -27,8 +27,12 @@ export class CallHistoryService {
     return this.http.get<CallHistoryRecord[]>(this.apiUrl);
   }
 
-  searchCalls(number: string, username: string): Observable<CallHistoryRecord[]> {
-    let params = new HttpParams().set('number', number).set('username', username);
+  searchCalls(number: string, dateRange: string = 'ALL', type: string = 'ALL', username: string = 'admin'): Observable<CallHistoryRecord[]> {
+    let params = new HttpParams()
+      .set('number', number || '')
+      .set('dateRange', dateRange || 'ALL')
+      .set('type', type || 'ALL')
+      .set('username', username || 'admin');
     return this.http.get<CallHistoryRecord[]>(`${this.apiUrl}/search`, { params });
   }
 }

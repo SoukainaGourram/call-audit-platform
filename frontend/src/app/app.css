@@ -1,193 +1,576 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* ==========================================================================
+   INWI ENTERPRISE TELECOM - GLOBAL EXTRAORDINARY DESIGN SYSTEM
+   Deep 3D Dark Glassmorphism (#0e0b16), Intense Magenta Neon Glows (#e20074),
+   Capsule Controls, Glass Cards & Unified High-End Corporate Styling
+   ========================================================================== */
+
+:root {
+  --inwi-magenta: #e20074;
+  --inwi-magenta-bright: #ff0084;
+  --inwi-magenta-glow: rgba(226, 0, 116, 0.65);
+  --inwi-purple: #8b5cf6;
+
+  --bg-dark-deep: #05040a;
+  --bg-card-glass: rgba(14, 11, 22, 0.85);
+  --bg-row-capsule: rgba(22, 17, 34, 0.75);
+  --bg-input-dark: rgba(8, 6, 14, 0.9);
+
+  --text-white: #ffffff;
+  --text-sub: #a1a1aa;
+
+  --border-glass: 1px solid rgba(255, 255, 255, 0.12);
+  --border-neon-magenta: 1px solid rgba(226, 0, 116, 0.5);
+  --border-neon-frame: 2px solid #e20074;
+
+  --radius-frame: 28px;
+  --radius-card: 22px;
+  --radius-capsule: 25px;
+}
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: #0b0f19;
-  color: #f8fafc;
+html, body {
+  background: 
+    radial-gradient(circle at 10% 90%, rgba(226, 0, 116, 0.4) 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 40%),
+    linear-gradient(180deg, #07050d 0%, #030206 100%) !important;
+  color: var(--text-white) !important;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* Page Container */
+.page-container {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 16px 20px;
 }
 
-.main-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* TOP NAVBAR GLASSMORPHISM FRAME */
+.inwi-header {
+  background: rgba(14, 11, 22, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: var(--border-neon-frame);
+  border-radius: 30px;
+  box-shadow: 0 0 35px var(--inwi-magenta-glow), inset 0 0 15px rgba(226, 0, 116, 0.2);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.85rem 2rem;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(226, 0, 116, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 12px 28px;
+  margin-top: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.header-brand {
+/* Center Navigation Filter Chips */
+.inwi-nav-chips {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
-.header-logo {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #e20074 0%, #a855f7 100%);
-  border-radius: 0.6rem;
+.inwi-nav-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d4d4d8;
+  padding: 8px 18px;
+  border-radius: 22px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inwi-nav-chip:hover {
+  background: rgba(226, 0, 116, 0.3);
+  color: #ffffff;
+  border-color: var(--inwi-magenta);
+}
+
+.inwi-nav-chip.active {
+  background: linear-gradient(135deg, var(--inwi-magenta) 0%, var(--inwi-magenta-bright) 100%);
+  color: #ffffff;
+  border-color: var(--inwi-magenta-bright);
+  box-shadow: 0 0 20px var(--inwi-magenta-glow);
+}
+
+/* User Pill Badge */
+.user-pill-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 16px;
+  border-radius: 25px;
+}
+
+.user-avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--inwi-magenta), var(--inwi-purple));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(226, 0, 116, 0.3);
-}
-
-.brand-title {
-  font-weight: 700;
-  font-size: 1.15rem;
+  font-weight: 800;
   color: #ffffff;
+  font-size: 0.8rem;
 }
 
-.badge-tag {
-  background: rgba(226, 0, 116, 0.2);
-  color: #f472b6;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.3rem;
-  font-weight: 700;
-  text-transform: uppercase;
+/* Main Outer Glassmorphism Frame (Matching Image Border Glow) */
+.inwi-outer-frame {
+  background: var(--bg-card-glass);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: var(--border-neon-frame);
+  border-radius: var(--radius-frame);
+  box-shadow: 0 0 40px var(--inwi-magenta-glow), inset 0 0 20px rgba(226, 0, 116, 0.2);
+  padding: 28px;
 }
 
-.nav-links {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.nav-item {
-  color: #94a3b8;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.nav-item:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-item.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, rgba(226, 0, 116, 0.3) 0%, rgba(168, 85, 247, 0.3) 100%);
-  border: 1px solid rgba(226, 0, 116, 0.4);
-}
-
-.user-menu {
+/* Top Header Bar */
+.inwi-top-bar {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.user-info {
+/* Logo Pill */
+.inwi-logo-pill {
   display: flex;
-  flex-direction: column;
-  text-align: right;
+  align-items: center;
+  gap: 6px;
 }
 
-.user-name {
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: #f8fafc;
+.inwi-logo-title {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--inwi-magenta-bright);
+  letter-spacing: -0.04em;
+  text-shadow: 0 0 20px var(--inwi-magenta-glow);
 }
 
-.user-role {
+.inwi-logo-sub {
   font-size: 0.75rem;
-  color: #94a3b8;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.btn-logout {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.45rem 0.7rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s ease;
-}
-
-.btn-logout:hover {
-  background: rgba(225, 29, 72, 0.25);
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem;
-}
-
-.glass-panel {
-  background: rgba(30, 27, 75, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.alert-success {
+/* Status Pill */
+.status-pill-green {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #6ee7b7;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.88rem;
+  color: #34d399;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.alert-error {
-  background: rgba(225, 29, 72, 0.15);
-  border: 1px solid rgba(225, 29, 72, 0.4);
-  color: #fecdd3;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.88rem;
+.status-dot-green {
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #34d399;
 }
 
-.btn {
-  padding: 0.65rem 1.25rem;
-  border-radius: 0.5rem;
+/* Search Bar Input */
+.search-capsule-input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 320px;
+  transition: all 0.2s ease;
+}
+
+.search-capsule-input:focus-within {
+  border-color: var(--inwi-magenta);
+  box-shadow: 0 0 15px var(--inwi-magenta-glow);
+}
+
+.search-capsule-input input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+}
+
+.search-capsule-input input::placeholder {
+  color: #71717a;
+}
+
+/* Date Chips Bar */
+.date-chips-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d4d4d8;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
-  font-size: 0.9rem;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #e20074 0%, #a855f7 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(226, 0, 116, 0.3);
+.date-chip.active, .date-chip:hover {
+  background: var(--inwi-magenta);
+  color: #ffffff;
+  border-color: var(--inwi-magenta);
+  box-shadow: 0 0 15px var(--inwi-magenta-glow);
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 18px rgba(226, 0, 116, 0.5);
-  transform: translateY(-1px);
+/* 4 KPI Cards Grid */
+.kpi-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
 }
 
-.btn-secondary {
+.kpi-card-exact {
+  background: rgba(22, 17, 34, 0.8);
+  border: 1px solid rgba(226, 0, 116, 0.4);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(226, 0, 116, 0.1);
+  transition: all 0.2s ease;
+}
+
+.kpi-card-exact:hover {
+  border-color: var(--inwi-magenta);
+  box-shadow: 0 0 20px var(--inwi-magenta-glow);
+}
+
+/* KPI Square Icon Boxes */
+.kpi-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.kpi-icon-phone {
+  background: rgba(226, 0, 116, 0.2);
+  color: var(--inwi-magenta-bright);
+  border: 1px solid rgba(226, 0, 116, 0.5);
+  box-shadow: 0 0 12px var(--inwi-magenta-glow);
+}
+
+.kpi-icon-clock {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.kpi-icon-check {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+}
+
+.kpi-icon-cross {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.kpi-title-exact {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.kpi-val-exact {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* Capsule Row Pills Table */
+.capsule-table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1.3fr 1.3fr 1fr 1.2fr 1fr;
+  padding: 10px 24px;
+  color: var(--text-sub);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.capsule-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.table-row-capsule {
+  background: rgba(22, 17, 34, 0.75);
+  border: 1px solid rgba(226, 0, 116, 0.45);
+  border-radius: 25px;
+  padding: 12px 24px;
+  display: grid;
+  grid-template-columns: 1.5fr 1.3fr 1.3fr 1fr 1.2fr 1fr;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.table-row-capsule:hover {
+  background: rgba(32, 24, 48, 0.9);
+  border-color: var(--inwi-magenta-bright);
+  box-shadow: 0 0 25px var(--inwi-magenta-glow);
+  transform: translateY(-2px);
+}
+
+.location-capsule {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #f8fafc;
+  color: #ffffff;
+  padding: 3px 14px;
+  border-radius: 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-block;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.18);
+.badge-capsule-reussi {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.badge-capsule-manque {
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+/* GLOBAL FORM CONTROLS & CARDS FOR PROFILE, USERS, LOGIN & AUDIT */
+.inwi-glass-card {
+  background: rgba(22, 17, 34, 0.8);
+  backdrop-filter: blur(25px);
+  border: var(--border-neon-magenta);
+  border-radius: 22px;
+  padding: 26px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(226, 0, 116, 0.12);
+  transition: all 0.2s ease;
+}
+
+.inwi-glass-card:hover {
+  border-color: var(--inwi-magenta);
+  box-shadow: 0 0 25px var(--inwi-magenta-glow);
+}
+
+.inwi-form-group {
+  margin-bottom: 20px;
+}
+
+.inwi-label {
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inwi-input, .inwi-select {
+  width: 100%;
+  background: var(--bg-input-dark) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  font-size: 0.9rem;
+  padding: 12px 18px;
+  border-radius: 16px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.inwi-input:disabled {
+  background: rgba(20, 20, 30, 0.6) !important;
+  color: #a1a1aa !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.inwi-input:focus, .inwi-select:focus {
+  border-color: var(--inwi-magenta) !important;
+  box-shadow: 0 0 15px var(--inwi-magenta-glow) !important;
+}
+
+.inwi-btn-primary {
+  background: linear-gradient(135deg, var(--inwi-magenta) 0%, #b8005d 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px var(--inwi-magenta-glow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.inwi-btn-primary:hover {
+  background: linear-gradient(135deg, var(--inwi-magenta-bright) 0%, var(--inwi-magenta) 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px var(--inwi-magenta-glow);
+}
+
+.inwi-btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.inwi-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+}
+
+.inwi-btn-danger {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inwi-btn-danger:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+}
+
+/* Modals */
+.inwi-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 4, 10, 0.85);
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.inwi-modal-card {
+  background: var(--bg-card-glass);
+  border: var(--border-neon-frame);
+  border-radius: var(--radius-frame);
+  box-shadow: 0 0 50px var(--inwi-magenta-glow);
+  width: 100%;
+  max-width: 580px;
+  padding: 32px;
+}
+
+.inwi-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inwi-modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inwi-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.inwi-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
 }

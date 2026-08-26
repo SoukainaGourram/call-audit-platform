@@ -1,134 +1,206 @@
 <div class="page-container">
-  <div class="header-section">
-    <div>
-      <h1>Gestion des Utilisateurs (Admin)</h1>
-      <p class="subtitle">Créez, modifiez, désactivez ou supprimez des comptes utilisateurs</p>
+  <div class="inwi-outer-frame">
+
+    <!-- Header Section -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: #ffffff; margin-bottom: 6px; display: flex; align-items: center; gap: 12px;">
+          <i class="fa-solid fa-users-gear" style="color: var(--inwi-magenta-bright);"></i>
+          Gestion des Utilisateurs & Habilitations
+        </h1>
+        <p style="color: var(--text-sub); font-size: 0.9rem;">
+          Administration des comptes agents, affectation des rôles d'accès et contrôle de statut
+        </p>
+      </div>
+      <button class="inwi-btn-primary" (click)="openAddModal()" style="height: 46px; padding: 0 24px;">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Nouveau Compte</span>
+      </button>
     </div>
-    <button class="btn btn-primary" (click)="openAddModal()">
-      ➕ Ajouter un Utilisateur
-    </button>
+
+    <!-- Success Notification -->
+    <div *ngIf="successMsg" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 10px 18px; border-radius: 16px; margin-bottom: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ successMsg }}</span>
+    </div>
+
+    <!-- Table Header Labels -->
+    <div class="capsule-table-header" style="grid-template-columns: 1.8fr 1.3fr 2fr 1.5fr 1fr 1.2fr;">
+      <div>Utilisateur</div>
+      <div>Login</div>
+      <div>Email Professionnel</div>
+      <div>Rôle & Niveau</div>
+      <div>Statut</div>
+      <div style="text-align: right;">Actions</div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && users.length === 0" style="text-align: center; padding: 40px; color: var(--text-sub);">
+      <i class="fa-solid fa-users-slash" style="font-size: 2.5rem; color: #52525b; margin-bottom: 12px;"></i>
+      <p>Aucun compte utilisateur enregistré. Cliquez sur "Nouveau Compte" pour en créer un.</p>
+    </div>
+
+    <!-- Capsule Row Pills List -->
+    <div *ngIf="!loading && users.length > 0" class="capsule-row-list">
+      <div *ngFor="let u of users" class="table-row-capsule" style="grid-template-columns: 1.8fr 1.3fr 2fr 1.5fr 1fr 1.2fr;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--inwi-magenta), var(--inwi-purple)); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 0.9rem;">
+              {{ (u.fullName || u.username).charAt(0).toUpperCase() }}
+            </div>
+            <strong style="color: #ffffff;">{{ u.fullName }}</strong>
+          </div>
+        </div>
+        <div>
+          <span style="font-family: monospace; background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 12px; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
+            {{ u.username }}
+          </span>
+        </div>
+        <div style="color: var(--text-sub);">{{ u.email }}</div>
+        <div>
+          <span class="badge-capsule-reussi" [style.background]="u.role === 'ADMIN' ? 'var(--inwi-magenta)' : 'rgba(255,255,255,0.1)'">
+            <i [class]="u.role === 'ADMIN' ? 'fa-solid fa-crown' : 'fa-solid fa-user-shield'" style="margin-right: 6px;"></i>
+            {{ u.role === 'ADMIN' ? 'ADMINISTRATEUR' : 'AGENT' }}
+          </span>
+        </div>
+        <div>
+          <span [class]="u.enabled ? 'badge-capsule-reussi' : 'badge-capsule-manque'">
+            {{ u.enabled ? 'ACTIF' : 'DÉSACTIVÉ' }}
+          </span>
+        </div>
+        <div style="text-align: right;">
+          <div style="display: inline-flex; gap: 8px;">
+            <button 
+              class="inwi-btn-secondary" 
+              style="padding: 6px 12px; font-size: 0.8rem; border-radius: 14px;"
+              [title]="u.enabled ? 'Désactiver le compte' : 'Activer le compte'"
+              (click)="toggleStatus(u)">
+              <i [class]="u.enabled ? 'fa-solid fa-user-slash' : 'fa-solid fa-user-check'" [style.color]="u.enabled ? '#ef4444' : '#10b981'"></i>
+            </button>
+            <button 
+              class="inwi-btn-secondary" 
+              style="padding: 6px 12px; font-size: 0.8rem; border-radius: 14px;"
+              title="Modifier" 
+              (click)="openEditModal(u)">
+              <i class="fa-solid fa-pen-to-square" style="color: #38bdf8;"></i>
+            </button>
+            <button 
+              class="inwi-btn-danger" 
+              style="padding: 6px 12px; font-size: 0.8rem;"
+              title="Supprimer" 
+              (click)="deleteUser(u)">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div *ngIf="successMsg" class="alert alert-success animate-fade">
-    ✅ {{ successMsg }}
-  </div>
-
-  <div class="table-card glass-panel">
-    <div class="table-header">
-      <h3>Liste des comptes enregistrés</h3>
-      <span class="count-badge">{{ users.length }} compte(s)</span>
-    </div>
-
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner-large"></div>
-      <p>Chargement des utilisateurs...</p>
-    </div>
-
-    <div *ngIf="!loading && users.length === 0" class="empty-state">
-      <div class="empty-icon">👥</div>
-      <h4>Aucun utilisateur trouvé</h4>
-    </div>
-
-    <div *ngIf="!loading && users.length > 0" class="table-responsive">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>Nom Complet</th>
-            <th>Nom d'utilisateur</th>
-            <th>Email</th>
-            <th>Rôle</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of users">
-            <td><strong>{{ u.fullName }}</strong></td>
-            <td><code>{{ u.username }}</code></td>
-            <td>{{ u.email }}</td>
-            <td>
-              <span class="role-badge" [ngClass]="u.role === 'ADMIN' ? 'role-admin' : 'role-user'">
-                {{ u.role === 'ADMIN' ? '👑 ADMIN' : '👤 USER' }}
-              </span>
-            </td>
-            <td>
-              <span class="status-badge" [ngClass]="u.enabled ? 'status-active' : 'status-disabled'">
-                {{ u.enabled ? '🟢 Actif' : '🔴 Désactivé' }}
-              </span>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button 
-                  class="btn-icon" 
-                  [title]="u.enabled ? 'Désactiver le compte' : 'Activer le compte'"
-                  (click)="toggleStatus(u)">
-                  {{ u.enabled ? '🔒' : '🔓' }}
-                </button>
-                <button class="btn-icon" title="Modifier" (click)="openEditModal(u)">
-                  ✏️
-                </button>
-                <button class="btn-icon btn-danger-icon" title="Supprimer" (click)="deleteUser(u)">
-                  🗑️
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Modal Modale de création / modification -->
-  <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
-    <div class="modal-card glass-panel" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ editMode ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}</h3>
-        <button class="close-btn" (click)="closeModal()">✕</button>
+  <!-- HIGH-END ENTERPRISE CREATION / EDITION MODAL -->
+  <div *ngIf="showModal" class="inwi-modal-backdrop" (click)="closeModal()">
+    <div class="inwi-modal-card" (click)="$event.stopPropagation()">
+      <div class="inwi-modal-header">
+        <div class="inwi-modal-title">
+          <i [class]="editMode ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'" style="color: var(--inwi-magenta-bright);"></i>
+          <span>{{ editMode ? 'Modifier l\'utilisateur' : 'Créer un compte utilisateur' }}</span>
+        </div>
+        <button class="inwi-modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
-      <form (ngSubmit)="saveUser()" class="modal-form">
-        <div *ngIf="errorMsg" class="alert alert-error">
-          {{ errorMsg }}
+      <form (ngSubmit)="saveUser()">
+        <!-- Error Alert -->
+        <div *ngIf="errorMsg" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i>
+          <span>{{ errorMsg }}</span>
         </div>
 
-        <div class="form-group">
-          <label>Nom d'utilisateur</label>
-          <input type="text" [(ngModel)]="currentUserForm.username" name="username" [disabled]="editMode" required />
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-user" style="color: var(--inwi-magenta-bright);"></i>
+            Nom d'utilisateur (Login)
+          </label>
+          <input 
+            type="text" 
+            class="inwi-input" 
+            [(ngModel)]="currentUserForm.username" 
+            name="username" 
+            [disabled]="editMode" 
+            placeholder="ex: soukaina.gourram" 
+            required />
         </div>
 
-        <div class="form-group">
-          <label>Nom Complet</label>
-          <input type="text" [(ngModel)]="currentUserForm.fullName" name="fullName" required />
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-id-card-clip" style="color: var(--inwi-purple);"></i>
+            Nom et Prénom
+          </label>
+          <input 
+            type="text" 
+            class="inwi-input" 
+            [(ngModel)]="currentUserForm.fullName" 
+            name="fullName" 
+            placeholder="ex: Soukaina Gourram" 
+            required />
         </div>
 
-        <div class="form-group">
-          <label>Adresse Email</label>
-          <input type="email" [(ngModel)]="currentUserForm.email" name="email" required />
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-envelope" style="color: #38bdf8;"></i>
+            Adresse Email Professionnelle
+          </label>
+          <input 
+            type="email" 
+            class="inwi-input" 
+            [(ngModel)]="currentUserForm.email" 
+            name="email" 
+            placeholder="ex: gourramsoukaina1@gmail.com" 
+            required />
         </div>
 
-        <div class="form-group">
-          <label>Mot de passe {{ editMode ? '(laisser vide si inchangé)' : '' }}</label>
-          <input type="password" [(ngModel)]="currentUserForm.password" name="password" [required]="!editMode" />
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-lock" style="color: #f59e0b;"></i>
+            Mot de passe {{ editMode ? '(laisser vide pour conserver)' : '' }}
+          </label>
+          <input 
+            type="password" 
+            class="inwi-input" 
+            [(ngModel)]="currentUserForm.password" 
+            name="password" 
+            placeholder="••••••••••••" 
+            [required]="!editMode" />
         </div>
 
-        <div class="form-group">
-          <label>Rôle</label>
-          <select [(ngModel)]="currentUserForm.role" name="role" class="select-input">
-            <option value="USER">USER (Agent)</option>
-            <option value="ADMIN">ADMIN (Administrateur)</option>
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
+            Rôle & Habilitation Système
+          </label>
+          <select [(ngModel)]="currentUserForm.role" name="role" class="inwi-select">
+            <option value="USER">USER - Agent d'Exploitation (Consultation Appels)</option>
+            <option value="ADMIN">ADMIN - Administrateur Système (Accès Complet & Audit)</option>
           </select>
         </div>
 
-        <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" [(ngModel)]="currentUserForm.enabled" name="enabled" />
-            Compte actif
+        <div class="inwi-form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #ffffff; font-size: 0.9rem;">
+            <input type="checkbox" [(ngModel)]="currentUserForm.enabled" name="enabled" style="accent-color: var(--inwi-magenta); width: 18px; height: 18px;" />
+            <span>Compte actif et autorisé à se connecter</span>
           </label>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <div class="inwi-modal-footer">
+          <button type="button" class="inwi-btn-secondary" (click)="closeModal()">
+            Annuler
+          </button>
+          <button type="submit" class="inwi-btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Enregistrer</span>
+          </button>
         </div>
       </form>
     </div>

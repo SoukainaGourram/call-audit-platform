@@ -1,62 +1,84 @@
-<div class="login-container">
-  <div class="login-card glass-panel">
-    <div class="brand-header">
-      <div class="logo-badge">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;">
+  <div style="width: 100%; max-width: 480px;">
+    
+    <!-- Outer Glassmorphism Frame with Neon Magenta Border Glow -->
+    <div class="inwi-outer-frame" style="padding: 40px;">
+      
+      <!-- Brand Header with official inwi SVG logo (NO Enterprise word) -->
+      <div style="text-align: center; margin-bottom: 28px;">
+        <div style="display: flex; justify-content: center; margin-bottom: 14px;">
+          <img src="inwi-official-logo.svg" alt="inwi logo" style="height: 52px; width: auto; filter: drop-shadow(0 0 16px var(--inwi-magenta-glow));" />
+        </div>
+        <p style="color: var(--text-sub); font-size: 0.88rem; font-weight: 500;">Portail d'Accès Sécurisé & Traçabilité des Appels</p>
       </div>
-      <h2>Inwi Call History</h2>
-      <p class="subtitle">Plateforme Sécurisée de Consultation des Appels</p>
+
+      <!-- Security Banner -->
+      <div style="background: rgba(226, 0, 116, 0.15); border: 1px solid rgba(226, 0, 116, 0.4); color: #ffffff; padding: 10px 16px; border-radius: 18px; text-align: center; margin-bottom: 24px; font-size: 0.8rem; font-weight: 600;">
+        <i class="fa-solid fa-shield-halved" style="color: var(--inwi-magenta-bright); margin-right: 8px;"></i>
+        <span>Authentification JWT & Protection des Données CNDP</span>
+      </div>
+
+      <form (ngSubmit)="onLogin()">
+        <!-- Error Alert -->
+        <div *ngIf="errorMsg" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i>
+          <span>{{ errorMsg }}</span>
+        </div>
+
+        <div class="inwi-form-group">
+          <label class="inwi-label">
+            <i class="fa-solid fa-user" style="color: var(--inwi-magenta-bright);"></i>
+            Nom d'utilisateur (Login)
+          </label>
+          <input 
+            type="text" 
+            class="inwi-input" 
+            [(ngModel)]="username" 
+            name="username" 
+            placeholder="ex: admin ou user" 
+            required 
+            autocomplete="username" 
+          />
+        </div>
+
+        <div class="inwi-form-group" style="margin-bottom: 28px;">
+          <label class="inwi-label">
+            <i class="fa-solid fa-lock" style="color: var(--inwi-purple);"></i>
+            Mot de passe
+          </label>
+          <input 
+            type="password" 
+            class="inwi-input" 
+            [(ngModel)]="password" 
+            name="password" 
+            placeholder="••••••••••••" 
+            required 
+            autocomplete="current-password" 
+          />
+        </div>
+
+        <button type="submit" class="inwi-btn-primary" style="width: 100%; height: 50px; font-size: 1rem;" [disabled]="loading">
+          <i *ngIf="!loading" class="fa-solid fa-right-to-bracket"></i>
+          <i *ngIf="loading" class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>{{ loading ? 'Connexion...' : 'Se Connecter' }}</span>
+        </button>
+
+        <!-- Quick Demo Access Section -->
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+          <span style="font-size: 0.75rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 12px;">
+            Accès Rapide Démo
+          </span>
+          <div style="display: flex; gap: 12px;">
+            <button type="button" class="inwi-btn-secondary" style="flex: 1; height: 42px; font-size: 0.85rem;" (click)="quickLogin('admin')">
+              <i class="fa-solid fa-crown" style="color: #fbbf24;"></i> Connexion Admin
+            </button>
+            <button type="button" class="inwi-btn-secondary" style="flex: 1; height: 42px; font-size: 0.85rem;" (click)="quickLogin('user')">
+              <i class="fa-solid fa-user-shield" style="color: #60a5fa;"></i> Connexion Agent
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
-    <form (ngSubmit)="onLogin()" class="login-form">
-      <div *ngIf="errorMsg" class="alert alert-error">
-        <span>{{ errorMsg }}</span>
-      </div>
-
-      <div class="form-group">
-        <label for="username">Nom d'utilisateur</label>
-        <input 
-          type="text" 
-          id="username" 
-          [(ngModel)]="username" 
-          name="username" 
-          placeholder="ex: admin ou user" 
-          required 
-          autocomplete="username"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input 
-          type="password" 
-          id="password" 
-          [(ngModel)]="password" 
-          name="password" 
-          placeholder="••••••••" 
-          required 
-          autocomplete="current-password"
-        />
-      </div>
-
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        <span *ngIf="!loading">Connexion</span>
-        <span *ngIf="loading" class="spinner"></span>
-      </button>
-
-      <div class="demo-buttons">
-        <p>Connexion rapide de démo :</p>
-        <div class="btn-group">
-          <button type="button" class="btn btn-secondary btn-sm" (click)="quickLogin('admin')">
-            👑 Admin (admin/admin123)
-          </button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="quickLogin('user')">
-            👤 Agent (user/user123)
-          </button>
-        </div>
-      </div>
-    </form>
   </div>
 </div>

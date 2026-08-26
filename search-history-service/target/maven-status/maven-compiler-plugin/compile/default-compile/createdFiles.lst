@@ -1,0 +1,7 @@
+com/example/search_history/repository/SearchLogRepository.class
+com/example/search_history/config/SecurityConfig.class
+com/example/search_history/config/DataInitializer.class
+com/example/search_history/SearchHistoryApplication.class
+com/example/search_history/entity/SearchLog.class
+com/example/search_history/controller/SearchLogController.class
+com/example/search_history/service/SearchLogService.class

@@ -1,44 +1,61 @@
 <div class="app-layout" [class.no-auth]="!authService.isLoggedIn()">
-  <!-- Top Navbar / Header -->
-  <header *ngIf="authService.isLoggedIn()" class="main-header glass-panel">
-    <div class="header-brand">
-      <div class="header-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
+  <!-- Top Corporate Navbar Matching Glassmorphism Design -->
+  <header *ngIf="authService.isLoggedIn()" class="inwi-header page-container">
+    
+    <!-- Brand Logo Box with official inwi SVG logo (NO Enterprise) -->
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <img src="inwi-official-logo.svg" alt="inwi" style="height: 38px; width: auto; filter: drop-shadow(0 0 12px var(--inwi-magenta-glow));" />
+
+      <!-- SQL Online Pill -->
+      <div class="status-pill-green">
+        <span class="status-dot-green"></span>
+        <span>SQL En Ligne</span>
       </div>
-      <span class="brand-title">Inwi Call History</span>
-      <span class="badge-tag">Stage Project</span>
     </div>
 
-    <nav class="nav-links">
-      <a routerLink="/search" routerLinkActive="active" class="nav-item">
-        <span>🔍 Appels</span>
+    <!-- Center Navigation Filter Chips -->
+    <nav class="inwi-nav-chips">
+      <a routerLink="/search" routerLinkActive="active" class="inwi-nav-chip">
+        <i class="fa-solid fa-phone-volume"></i>
+        <span>Appels & Masquage</span>
       </a>
-      <a routerLink="/history" routerLinkActive="active" class="nav-item">
-        <span>📜 Traçabilité</span>
+      <a routerLink="/history" routerLinkActive="active" class="inwi-nav-chip">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Traçabilité Audit</span>
       </a>
-      <a *ngIf="authService.isAdmin()" routerLink="/users" routerLinkActive="active" class="nav-item">
-        <span>👑 Utilisateurs</span>
+      <a *ngIf="authService.isAdmin()" routerLink="/users" routerLinkActive="active" class="inwi-nav-chip">
+        <i class="fa-solid fa-users-gear"></i>
+        <span>Utilisateurs</span>
       </a>
-      <a routerLink="/profile" routerLinkActive="active" class="nav-item">
-        <span>👤 Profil</span>
+      <a routerLink="/profile" routerLinkActive="active" class="inwi-nav-chip">
+        <i class="fa-solid fa-id-card"></i>
+        <span>Mon Profil</span>
       </a>
     </nav>
 
-    <div class="user-menu" *ngIf="authService.currentUser() as user">
-      <div class="user-info">
-        <span class="user-name">{{ user.fullName || user.username }}</span>
-        <span class="user-role">{{ user.role === 'ADMIN' ? '👑 Administrateur' : '👤 Agent' }}</span>
+    <!-- User Profile & Morocco Flag Pill -->
+    <div *ngIf="authService.currentUser() as user" style="display: flex; align-items: center; gap: 12px;">
+      <div class="user-pill-badge">
+        <div class="user-avatar-circle">
+          {{ (user.fullName || user.username).charAt(0).toUpperCase() }}
+        </div>
+        <span style="font-size: 0.85rem; font-weight: 700; color: #ffffff;">
+          {{ user.fullName || user.username }}
+        </span>
+        <span style="font-size: 1rem;" title="Maroc">🇲🇦</span>
+        <i class="fa-regular fa-bell" style="color: var(--text-sub); font-size: 0.9rem; cursor: pointer;"></i>
       </div>
-      <button (click)="onLogout()" class="btn-logout" title="Déconnexion">
-        🚪
+
+      <button (click)="onLogout()" class="inwi-btn-danger" style="padding: 8px 14px; font-size: 0.8rem; border-radius: 18px;" title="Déconnexion">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Déconnexion</span>
       </button>
     </div>
+
   </header>
 
-  <!-- Main Content Body -->
-  <main class="main-content">
+  <!-- Main View Container -->
+  <main class="page-container" style="padding-bottom: 40px;">
     <router-outlet></router-outlet>
   </main>
 </div>

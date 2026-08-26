@@ -1,108 +1,319 @@
 <div class="page-container">
-  <div class="header-section">
-    <div>
-      <h1>Recherche & Historique des Appels</h1>
-      <p class="subtitle">Consultez les enregistrements d'appels avec masquage automatique de confidentialité</p>
-    </div>
-    <div class="privacy-badge">
-      <span class="shield-icon">🛡️</span> Masquage RGPD Activé (ex: 06*****67)
-    </div>
-  </div>
 
-  <div *ngIf="loggedSearchAlert" class="alert alert-success animate-fade">
-    ✅ Recherche sur <strong>{{ lastSearchedNumber }}</strong> enregistrée automatiquement dans la traçabilité.
-  </div>
+  <!-- Outer Glassmorphism Frame with Intense Magenta Neon Border Glow -->
+  <div class="inwi-outer-frame">
 
-  <div class="search-card glass-panel">
-    <form (ngSubmit)="onSearch()" class="search-form">
-      <div class="search-input-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+    <!-- Top Header Bar -->
+    <div class="inwi-top-bar">
+      
+      <!-- Brand Logo & SQL Online Status -->
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="inwi-logo-pill">
+          <span class="inwi-logo-title">inwi</span>
+          <span class="inwi-logo-sub">Enterprise</span>
+        </div>
+
+        <div class="status-pill-green">
+          <span class="status-dot-green"></span>
+          <span>SQL En Ligne</span>
+        </div>
+      </div>
+
+      <!-- Capsule Search Input Bar -->
+      <form (ngSubmit)="onSearch()" class="search-capsule-input">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-sub); font-size: 0.9rem;"></i>
         <input 
           type="text" 
           [(ngModel)]="searchQuery" 
           name="searchQuery" 
-          placeholder="Rechercher par numéro (ex: 0661234567, 0655443322)..." 
-          class="search-input"
+          placeholder="Rechercher un numéro (ex: 0661234567)..." 
         />
-        <button *ngIf="searchQuery" type="button" class="btn-clear" (click)="resetSearch()">✕</button>
+        <button type="submit" style="display: none;"></button>
+      </form>
+
+      <!-- Date Filter Chips Bar (Persistent Highlighting) -->
+      <div class="date-chips-bar">
+        <button 
+          type="button" 
+          class="date-chip" 
+          [class.active]="filterState.dateRange === 'ALL'" 
+          (click)="setDateFilter('ALL')">
+          Tous
+        </button>
+        <button 
+          type="button" 
+          class="date-chip" 
+          [class.active]="filterState.dateRange === 'TODAY'" 
+          (click)="setDateFilter('TODAY')">
+          Aujourd'hui
+        </button>
+        <button 
+          type="button" 
+          class="date-chip" 
+          [class.active]="filterState.dateRange === 'YESTERDAY'" 
+          (click)="setDateFilter('YESTERDAY')">
+          Hier
+        </button>
+        <button 
+          type="button" 
+          class="date-chip" 
+          [class.active]="filterState.dateRange === 'MONTH'" 
+          (click)="setDateFilter('MONTH')">
+          Ce Mois
+        </button>
       </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        🔍 Rechercher
+    </div>
+
+    <!-- 4 KPI Summary Cards Grid (Exact Match to Screenshot) -->
+    <div class="kpi-grid-4">
+      
+      <!-- Card 1: Total Appels -->
+      <div class="kpi-card-exact">
+        <div class="kpi-icon-box kpi-icon-phone">
+          <i class="fa-solid fa-phone-volume"></i>
+        </div>
+        <div class="kpi-text-group">
+          <span class="kpi-title-exact">Total Appels Filtrés:</span>
+          <span class="kpi-val-exact">{{ totalCount }}</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Durée -->
+      <div class="kpi-card-exact">
+        <div class="kpi-icon-box kpi-icon-clock">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="kpi-text-group">
+          <span class="kpi-title-exact">Total Durée:</span>
+          <span class="kpi-val-exact">{{ totalDurationStr }}</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Appels Réussis -->
+      <div class="kpi-card-exact">
+        <div class="kpi-icon-box kpi-icon-check">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="kpi-text-group">
+          <span class="kpi-title-exact">Appels Réussis:</span>
+          <span class="kpi-val-exact" style="color: #34d399;">{{ successCount }}</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Appels Manqués -->
+      <div class="kpi-card-exact">
+        <div class="kpi-icon-box kpi-icon-cross">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <div class="kpi-text-group">
+          <span class="kpi-title-exact">Appels Manqués:</span>
+          <span class="kpi-val-exact" style="color: #f87171;">{{ missedCount }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Search & Type Filter Controls Bar -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      
+      <!-- Quick Test Chips -->
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 600;">Recherche rapide :</span>
+        <button *ngFor="let num of ['0661234567', '0655443322', '0522998877', '0707112233', '0667890123']" 
+                type="button" 
+                (click)="quickSearch(num)" 
+                style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #38bdf8; font-family: monospace; font-size: 0.78rem; padding: 4px 12px; border-radius: 16px; cursor: pointer; transition: all 0.2s ease;">
+          ⚡ {{ num }}
+        </button>
+      </div>
+
+      <!-- Type Filter Chips -->
+      <div class="date-chips-bar">
+        <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 600; margin-right: 4px;">Type :</span>
+        <button type="button" class="date-chip" [class.active]="filterState.type === 'ALL'" (click)="setTypeFilter('ALL')">Tous</button>
+        <button type="button" class="date-chip" [class.active]="filterState.type === 'INCOMING'" (click)="setTypeFilter('INCOMING')">Entrants</button>
+        <button type="button" class="date-chip" [class.active]="filterState.type === 'OUTGOING'" (click)="setTypeFilter('OUTGOING')">Sortants</button>
+        <button type="button" class="date-chip" [class.active]="filterState.type === 'MISSED'" (click)="setTypeFilter('MISSED')">Manqués</button>
+      </div>
+
+    </div>
+
+    <!-- Audit Alert Bar -->
+    <div *ngIf="loggedSearchAlert" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 10px 18px; border-radius: 16px; margin-bottom: 20px; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-shield-circle-check"></i>
+        <span>Recherche combinée enregistrée en audit CNDP pour le numéro <strong>{{ lastSearchedNumber }}</strong>.</span>
+      </div>
+      <span class="badge-capsule-reussi" style="font-size: 0.75rem;">{{ filteredCalls.length }} appels trouvés</span>
+    </div>
+
+    <!-- Dynamic Result Counter Badge -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 0 8px;">
+      <span style="color: var(--text-sub); font-size: 0.85rem; font-weight: 600;">
+        Résultats de recherche combinée
+      </span>
+      <span class="badge-capsule-reussi" style="background: var(--inwi-magenta); font-size: 0.8rem; padding: 6px 16px;">
+        <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i>
+        {{ filteredCalls.length }} appel(s) trouvé(s)
+      </span>
+    </div>
+
+    <!-- Table Header Labels with Interactive Sorting -->
+    <div class="capsule-table-header">
+      <div (click)="toggleSort('startedAt')" style="cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Cliquer pour trier par Date/Heure">
+        <span>Date/Heure</span>
+        <i class="fa-solid fa-sort" style="color: var(--inwi-magenta-bright); font-size: 0.75rem;"></i>
+      </div>
+      <div>Appelant</div>
+      <div>Appelé</div>
+      <div (click)="toggleSort('duration')" style="cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Cliquer pour trier par Durée">
+        <span>Durée</span>
+        <i class="fa-solid fa-sort" style="color: var(--inwi-magenta-bright); font-size: 0.75rem;"></i>
+      </div>
+      <div>Localisation</div>
+      <div style="text-align: center;">Status</div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredCalls.length === 0 && !loading" style="text-align: center; padding: 50px; color: var(--text-sub);">
+      <i class="fa-solid fa-phone-slash" style="font-size: 2.5rem; color: #52525b; margin-bottom: 12px;"></i>
+      <p>Aucun appel ne correspond à cette combinaison de filtres (Numéro: {{ filterState.number || 'Tous' }}, Période: {{ filterState.dateRange }}, Type: {{ filterState.type }}).</p>
+    </div>
+
+    <!-- Capsule Row Pills List (Clickable for Detail Modal) -->
+    <div *ngIf="paginatedCalls.length > 0" class="capsule-row-list">
+      <div *ngFor="let call of paginatedCalls" 
+           class="table-row-capsule" 
+           (click)="openDetailModal(call)" 
+           title="Cliquer pour afficher les détails complets de cet appel" 
+           style="cursor: pointer;">
+        <div style="color: #e4e4e7; font-weight: 500;">
+          {{ call.startedAt | date:'dd/MM/yyyy HH:mm' }}
+        </div>
+        <div style="font-family: monospace; font-weight: 600; color: #ffffff;">
+          {{ call.caller }}
+        </div>
+        <div style="font-family: monospace; font-weight: 600; color: #ffffff;">
+          {{ call.callee }}
+        </div>
+        <div style="color: var(--text-sub); font-family: monospace;">
+          {{ call.duration }}
+        </div>
+        <div>
+          <span class="location-capsule">
+            {{ call.location || 'Casablanca' }}
+          </span>
+        </div>
+        <div style="text-align: center;">
+          <span [class]="call.status === 'TERMINE' || call.status === 'Réussi' ? 'badge-capsule-reussi' : 'badge-capsule-manque'">
+            {{ call.status === 'TERMINE' ? 'Réussi' : (call.status === 'MANQUE' ? 'Manqué' : call.status) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div *ngIf="totalPages > 1" style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px; padding: 12px 16px; background: rgba(22, 17, 34, 0.6); border-radius: 20px; border: 1px solid rgba(226, 0, 116, 0.3);">
+      <button 
+        type="button" 
+        class="inwi-btn-secondary" 
+        [disabled]="currentPage === 1" 
+        (click)="goToPage(currentPage - 1)" 
+        style="padding: 6px 16px; font-size: 0.8rem; border-radius: 14px;">
+        <i class="fa-solid fa-chevron-left" style="margin-right: 6px;"></i> Précédent
       </button>
-    </form>
 
-    <div class="quick-samples">
-      <span>Numéros de test :</span>
-      <button class="chip" (click)="quickSearch('0661234567')">0661234567</button>
-      <button class="chip" (click)="quickSearch('0655443322')">0655443322</button>
-      <button class="chip" (click)="quickSearch('0522998877')">0522998877</button>
-      <button class="chip" (click)="quickSearch('0667890123')">0667890123</button>
+      <span style="color: #ffffff; font-size: 0.85rem; font-weight: 600;">
+        Page <strong style="color: var(--inwi-magenta-bright);">{{ currentPage }}</strong> sur <strong>{{ totalPages }}</strong>
+      </span>
+
+      <button 
+        type="button" 
+        class="inwi-btn-secondary" 
+        [disabled]="currentPage === totalPages" 
+        (click)="goToPage(currentPage + 1)" 
+        style="padding: 6px 16px; font-size: 0.8rem; border-radius: 14px;">
+        Suivant <i class="fa-solid fa-chevron-right" style="margin-left: 6px;"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- CALL DETAIL GLASSMORPHIC MODAL -->
+  <div *ngIf="showDetailModal && selectedCallDetail" class="inwi-modal-backdrop" (click)="closeDetailModal()">
+    <div class="inwi-modal-card" (click)="$event.stopPropagation()" style="max-width: 600px;">
+      
+      <!-- Modal Header -->
+      <div class="inwi-modal-header">
+        <div class="inwi-modal-title">
+          <i class="fa-solid fa-circle-info" style="color: var(--inwi-magenta-bright);"></i>
+          <span>Détails Complets de l'Appel #{{ selectedCallDetail.id }}</span>
+        </div>
+        <button class="inwi-modal-close" (click)="closeDetailModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+        
+        <!-- Caller / Callee Group -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 18px; border: 1px solid rgba(226, 0, 116, 0.3);">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Appelant (Masqué CNDP)</span>
+            <strong style="font-family: monospace; font-size: 1.1rem; color: #38bdf8;">{{ selectedCallDetail.caller }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Appelé (Masqué CNDP)</span>
+            <strong style="font-family: monospace; font-size: 1.1rem; color: #38bdf8;">{{ selectedCallDetail.callee }}</strong>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="inwi-glass-card" style="padding: 14px;">
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Date & Heure de Début</span>
+            <strong style="color: #ffffff; font-size: 0.9rem;">{{ selectedCallDetail.startedAt | date:'dd/MM/yyyy HH:mm:ss' }}</strong>
+          </div>
+
+          <div class="inwi-glass-card" style="padding: 14px;">
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Durée d'Appel</span>
+            <strong style="font-family: monospace; color: #ffffff; font-size: 0.9rem;">{{ selectedCallDetail.duration }}</strong>
+          </div>
+
+          <div class="inwi-glass-card" style="padding: 14px;">
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Localisation / Antenne</span>
+            <span class="location-capsule" style="margin-top: 4px;">{{ selectedCallDetail.location }}</span>
+          </div>
+
+          <div class="inwi-glass-card" style="padding: 14px;">
+            <span style="font-size: 0.75rem; color: var(--text-sub); display: block; margin-bottom: 4px;">Type d'Appel</span>
+            <span class="date-chip active" style="margin-top: 4px; padding: 2px 10px; font-size: 0.75rem;">{{ selectedCallDetail.type }}</span>
+          </div>
+        </div>
+
+        <!-- Status & Compliance Footer -->
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); padding: 14px 18px; border-radius: 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <span style="font-size: 0.78rem; color: #34d399; display: block; font-weight: 700;">Conformité & Traçabilité Legale</span>
+            <span style="font-size: 0.75rem; color: var(--text-sub);">Numéro masqué conformément aux règles CNDP Loi 09-08.</span>
+          </div>
+          <span [class]="selectedCallDetail.status === 'TERMINE' || selectedCallDetail.status === 'Réussi' ? 'badge-capsule-reussi' : 'badge-capsule-manque'">
+            {{ selectedCallDetail.status === 'TERMINE' ? 'Réussi' : selectedCallDetail.status }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="inwi-modal-footer">
+        <button type="button" class="inwi-btn-primary" (click)="closeDetailModal()">
+          Fermer
+        </button>
+      </div>
+
     </div>
   </div>
 
-  <div class="table-card glass-panel">
-    <div class="table-header">
-      <h3>
-        <span *ngIf="!hasSearched">Tous les appels récents</span>
-        <span *ngIf="hasSearched">Résultats pour "{{ lastSearchedNumber }}" ({{ calls.length }})</span>
-      </h3>
-      <span class="count-badge">{{ calls.length }} enregistrement(s)</span>
-    </div>
-
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner-large"></div>
-      <p>Chargement des enregistrements d'appels...</p>
-    </div>
-
-    <div *ngIf="!loading && calls.length === 0" class="empty-state">
-      <div class="empty-icon">📱</div>
-      <h4>Aucun appel trouvé</h4>
-      <p>Aucun enregistrement ne correspond au numéro de téléphone recherché.</p>
-    </div>
-
-    <div *ngIf="!loading && calls.length > 0" class="table-responsive">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Numéro Appelant</th>
-            <th>Numéro Appelé</th>
-            <th>Date & Heure</th>
-            <th>Durée</th>
-            <th>Ville</th>
-            <th>Statut</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let call of calls">
-            <td>
-              <span class="type-badge" [ngClass]="call.type ? call.type.toLowerCase() : 'outgoing'">
-                <span *ngIf="call.type === 'INCOMING'">↙ Entrant</span>
-                <span *ngIf="call.type === 'OUTGOING'">↗ Sortant</span>
-                <span *ngIf="call.type === 'MISSED'">⚠️ Manqué</span>
-              </span>
-            </td>
-            <td>
-              <span class="phone-masked">{{ call.caller }}</span>
-            </td>
-            <td>
-              <span class="phone-masked">{{ call.callee }}</span>
-            </td>
-            <td>{{ call.startedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td><strong>{{ call.duration }}</strong></td>
-            <td>{{ call.location || 'Maroc' }}</td>
-            <td>
-              <span class="status-pill" [ngClass]="call.status === 'MANQUE' ? 'status-danger' : 'status-success'">
-                {{ call.status }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>

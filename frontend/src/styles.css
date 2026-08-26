@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global FontAwesome Local Import & Inwi Enterprise Dark Theme Stylesheet */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import './app/app.css';
+
+html, body {
+  background: #0d061a !important;
+  background-color: #0d061a !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}

@@ -1,0 +1,7 @@
+/app/src/main/java/com/example/search_history/SearchHistoryApplication.java
+/app/src/main/java/com/example/search_history/config/DataInitializer.java
+/app/src/main/java/com/example/search_history/config/SecurityConfig.java
+/app/src/main/java/com/example/search_history/controller/SearchLogController.java
+/app/src/main/java/com/example/search_history/entity/SearchLog.java
+/app/src/main/java/com/example/search_history/repository/SearchLogRepository.java
+/app/src/main/java/com/example/search_history/service/SearchLogService.java

@@ -1,83 +1,127 @@
 <div class="page-container">
-  <div class="header-section">
-    <div>
-      <h1>Mon Profil Utilisateur</h1>
-      <p class="subtitle">Gérez vos informations personnelles et votre sécurité</p>
-    </div>
-  </div>
+  <div class="inwi-outer-frame">
 
-  <div class="profile-grid">
-    <!-- Card Informations Personnelles -->
-    <div class="profile-card glass-panel">
-      <div class="card-header">
-        <h3>👤 Informations Personnelles</h3>
-        <span class="role-badge" [ngClass]="role === 'ADMIN' ? 'role-admin' : 'role-user'">
-          {{ role === 'ADMIN' ? '👑 Administrateur' : '👤 Agent Utilisateur' }}
-        </span>
-      </div>
-
-      <div *ngIf="profileMsg" class="alert alert-success">
-        ✅ {{ profileMsg }}
-      </div>
-      <div *ngIf="profileError" class="alert alert-error">
-        ⚠️ {{ profileError }}
-      </div>
-
-      <form (ngSubmit)="onUpdateProfile()" class="profile-form">
-        <div class="form-group">
-          <label>Nom d'utilisateur</label>
-          <input type="text" [value]="username" disabled class="disabled-input" />
-        </div>
-
-        <div class="form-group">
-          <label>Nom Complet</label>
-          <input type="text" [(ngModel)]="fullName" name="fullName" required />
-        </div>
-
-        <div class="form-group">
-          <label>Adresse Email</label>
-          <input type="email" [(ngModel)]="email" name="email" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          Enregistrer les modifications
-        </button>
-      </form>
+    <!-- Page Header -->
+    <div style="margin-bottom: 28px;">
+      <h1 style="font-size: 1.75rem; font-weight: 800; color: #ffffff; margin-bottom: 6px; display: flex; align-items: center; gap: 12px;">
+        <i class="fa-solid fa-id-card" style="color: var(--inwi-magenta-bright);"></i>
+        Mon Profil Utilisateur & Sécurité
+      </h1>
+      <p style="color: var(--text-sub); font-size: 0.9rem;">
+        Gestion de vos informations d'identité et mise à jour sécurisée des accès système
+      </p>
     </div>
 
-    <!-- Card Modification Mot de passe -->
-    <div class="profile-card glass-panel">
-      <div class="card-header">
-        <h3>🔐 Changer mon Mot de passe</h3>
-      </div>
-
-      <div *ngIf="passwordMsg" class="alert alert-success">
-        ✅ {{ passwordMsg }}
-      </div>
-      <div *ngIf="passwordError" class="alert alert-error">
-        ⚠️ {{ passwordError }}
-      </div>
-
-      <form (ngSubmit)="onChangePassword()" class="profile-form">
-        <div class="form-group">
-          <label>Ancien mot de passe</label>
-          <input type="password" [(ngModel)]="oldPassword" name="oldPassword" placeholder="••••••••" required />
+    <!-- 2 Column Grid for Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px;">
+      
+      <!-- Profile Info Glass Card -->
+      <div class="inwi-glass-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-user-gear" style="color: var(--inwi-purple);"></i>
+            Informations du Profil
+          </h3>
+          <span class="badge-capsule-reussi" [style.background]="role === 'ADMIN' ? 'var(--inwi-magenta)' : 'rgba(255,255,255,0.1)'">
+            <i [class]="role === 'ADMIN' ? 'fa-solid fa-crown' : 'fa-solid fa-user-shield'" style="margin-right: 6px;"></i>
+            {{ role === 'ADMIN' ? 'ADMINISTRATEUR' : 'AGENT' }}
+          </span>
         </div>
 
-        <div class="form-group">
-          <label>Nouveau mot de passe</label>
-          <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="••••••••" required />
+        <div *ngIf="profileMsg" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i>
+          <span>{{ profileMsg }}</span>
         </div>
 
-        <div class="form-group">
-          <label>Confirmer le nouveau mot de passe</label>
-          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" required />
+        <div *ngIf="profileError" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i>
+          <span>{{ profileError }}</span>
         </div>
 
-        <button type="submit" class="btn btn-secondary">
-          Mettre à jour le mot de passe
-        </button>
-      </form>
+        <form (ngSubmit)="onUpdateProfile()">
+          <div class="inwi-form-group">
+            <label class="inwi-label">
+              <i class="fa-solid fa-user-lock" style="color: var(--text-sub);"></i>
+              Identifiant d'accès (Login)
+            </label>
+            <input type="text" [value]="username" disabled class="inwi-input" />
+          </div>
+
+          <div class="inwi-form-group">
+            <label class="inwi-label">
+              <i class="fa-solid fa-id-card-clip" style="color: var(--inwi-magenta-bright);"></i>
+              Nom et Prénom
+            </label>
+            <input type="text" class="inwi-input" [(ngModel)]="fullName" name="fullName" placeholder="ex: Soukaina Gourram" required />
+          </div>
+
+          <div class="inwi-form-group" style="margin-bottom: 24px;">
+            <label class="inwi-label">
+              <i class="fa-solid fa-envelope" style="color: #38bdf8;"></i>
+              Adresse Email Professionnelle
+            </label>
+            <input type="email" class="inwi-input" [(ngModel)]="email" name="email" placeholder="ex: contact@inwi.ma" required />
+          </div>
+
+          <button type="submit" class="inwi-btn-primary" style="width: 100%; height: 48px;">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Enregistrer les modifications</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Password Security Glass Card -->
+      <div class="inwi-glass-card">
+        <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-key" style="color: #f59e0b;"></i>
+            Sécurité & Mot de Passe
+          </h3>
+        </div>
+
+        <div *ngIf="passwordMsg" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i>
+          <span>{{ passwordMsg }}</span>
+        </div>
+
+        <div *ngIf="passwordError" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 18px; border-radius: 14px; margin-bottom: 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i>
+          <span>{{ passwordError }}</span>
+        </div>
+
+        <form (ngSubmit)="onChangePassword()">
+          <div class="inwi-form-group">
+            <label class="inwi-label">
+              <i class="fa-solid fa-lock" style="color: #f59e0b;"></i>
+              Ancien mot de passe
+            </label>
+            <input type="password" class="inwi-input" [(ngModel)]="oldPassword" name="oldPassword" placeholder="••••••••••••" required />
+          </div>
+
+          <div class="inwi-form-group">
+            <label class="inwi-label">
+              <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
+              Nouveau mot de passe
+            </label>
+            <input type="password" class="inwi-input" [(ngModel)]="newPassword" name="newPassword" placeholder="••••••••••••" required />
+          </div>
+
+          <div class="inwi-form-group" style="margin-bottom: 24px;">
+            <label class="inwi-label">
+              <i class="fa-solid fa-shield-check" style="color: #34d399;"></i>
+              Confirmer le nouveau mot de passe
+            </label>
+            <input type="password" class="inwi-input" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••••••" required />
+          </div>
+
+          <button type="submit" class="inwi-btn-secondary" style="width: 100%; height: 48px;">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>Mettre à jour le mot de passe</span>
+          </button>
+        </form>
+      </div>
+
     </div>
+
   </div>
 </div>

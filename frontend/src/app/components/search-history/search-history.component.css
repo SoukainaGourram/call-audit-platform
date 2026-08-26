@@ -1,107 +1,143 @@
 .page-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
 .header-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-end;
+  gap: 1rem;
 }
 
-.header-section h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: #ffffff;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
 }
 
 .table-card {
-  border-radius: 1rem;
-  overflow: hidden;
-  background: rgba(30, 27, 75, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .table-header {
-  padding: 1.25rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.table-header h3 {
-  font-size: 1.1rem;
+.table-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.table-header-title h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
   color: #ffffff;
 }
 
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.custom-table th {
-  background: rgba(15, 23, 42, 0.6);
-  padding: 1rem 1.25rem;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-  font-weight: 600;
-}
-
-.custom-table td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.9rem;
-  color: #e2e8f0;
-}
-
-.custom-table tr:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.user-chip {
+.count-badge {
   background: rgba(147, 51, 234, 0.15);
   border: 1px solid rgba(147, 51, 234, 0.3);
   color: #c084fc;
+  font-size: 0.78rem;
+  font-weight: 700;
   padding: 0.25rem 0.65rem;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
+  border-radius: 0.4rem;
 }
 
-.searched-number {
-  font-family: monospace;
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #38bdf8;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.log-id {
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  font-size: 0.88rem;
+}
+
+.date-cell {
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .result-badge {
+  display: inline-flex;
   padding: 0.25rem 0.65rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  border-radius: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .badge-success {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+  border: 1px solid var(--status-success-border);
 }
 
 .badge-warning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text);
+  border: 1px solid var(--status-warning-border);
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem;
-  color: #94a3b8;
+.audit-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #34d399;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
-.empty-icon {
-  font-size: 3rem;
+.empty-icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
   margin-bottom: 1rem;
 }
