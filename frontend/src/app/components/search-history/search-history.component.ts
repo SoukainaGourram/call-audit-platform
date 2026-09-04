@@ -26,7 +26,6 @@ export class SearchHistoryComponent implements OnInit {
     private searchHistoryService: SearchHistoryService,
     public authService: AuthService
   ) {
-    // Initialiser immédiatement des enregistrements par défaut pour éviter tout écran blanc
     this.logs = this.getMockLogs();
     this.filteredLogs = this.logs;
     this.computeKpiStats(this.logs);
@@ -37,46 +36,84 @@ export class SearchHistoryComponent implements OnInit {
   }
 
   getMockLogs(): SearchLog[] {
-    return [
-      { id: 31, username: 'admin', searchedNumber: '0655443322', searchTimestamp: '2026-08-24T21:41:52', resultCount: 9 },
-      { id: 30, username: 'admin', searchedNumber: '0661234567', searchTimestamp: '2026-08-24T21:39:01', resultCount: 9 },
-      { id: 29, username: 'agent_inwi_rabat', searchedNumber: '0661234567', searchTimestamp: '2026-08-24T18:55:50', resultCount: 9 },
-      { id: 28, username: 'user', searchedNumber: '0707112233', searchTimestamp: '2026-08-24T19:03:13', resultCount: 6 },
-      { id: 27, username: 'user', searchedNumber: '0661234567', searchTimestamp: '2026-08-24T19:03:04', resultCount: 9 },
-      { id: 26, username: 'admin', searchedNumber: '06******67', searchTimestamp: '2026-08-24T16:53:27', resultCount: 45 },
-      { id: 25, username: 'admin', searchedNumber: '0661', searchTimestamp: '2026-08-24T16:53:26', resultCount: 38 },
-      { id: 24, username: 'user', searchedNumber: '0522998877', searchTimestamp: '2026-08-24T14:40:16', resultCount: 4 }
+    const user = this.authService.currentUser();
+    const isUserAdmin = this.authService.isAdmin();
+
+    const allMocks: SearchLog[] = [
+      { id: 31, username: 'admin', searchedNumber: '0655443322', searchTimestamp: '2026-08-31T11:41:52', resultCount: 4 },
+      { id: 30, username: 'admin', searchedNumber: '0661234567', searchTimestamp: '2026-08-31T09:39:01', resultCount: 4 },
+      { id: 29, username: 'agent_inwi_rabat', searchedNumber: '0661234567', searchTimestamp: '2026-08-30T18:55:50', resultCount: 4 },
+      { id: 28, username: 'user', searchedNumber: '0707112233', searchTimestamp: '2026-08-30T19:03:13', resultCount: 4 },
+      { id: 27, username: 'user', searchedNumber: '0661234567', searchTimestamp: '2026-08-30T19:03:04', resultCount: 4 },
+      { id: 26, username: 'admin', searchedNumber: '0667890123', searchTimestamp: '2026-08-25T16:53:27', resultCount: 4 },
+      { id: 25, username: 'admin', searchedNumber: '0522998877', searchTimestamp: '2026-08-20T16:53:26', resultCount: 4 },
+      { id: 24, username: 'user', searchedNumber: '0522998877', searchTimestamp: '2026-08-15T14:40:16', resultCount: 4 }
     ];
+
+    if (isUserAdmin) {
+      return allMocks;
+    } else {
+      const username = user?.username || 'user';
+      return allMocks.filter(l => l.username === username);
+    }
   }
 
   computeKpiStats(data: SearchLog[]): void {
-    this.totalAuditCount = data.length > 0 ? Math.max(31, data.length) : 31;
-    this.todayCount = Math.max(14, data.filter(l => l.searchTimestamp && l.searchTimestamp.includes('2026-08-24')).length);
+    this.totalAuditCount = data.length;
+    this.todayCount = data.filter(l => l.searchTimestamp && l.searchTimestamp.startsWith('2026-08-31')).length;
     const agents = new Set(data.map(l => l.username));
-    this.distinctAgentsCount = Math.max(3, agents.size);
+    this.distinctAgentsCount = agents.size;
   }
 
   loadLogs(): void {
     this.loading = true;
-    this.searchHistoryService.getAllSearches().subscribe({
-      next: (data) => {
-        this.loading = false;
-        if (data && data.length > 0) {
-          this.logs = data;
-        } else {
+    const isUserAdmin = this.authService.isAdmin();
+    const currentUser = this.authService.currentUser();
+
+    if (isUserAdmin) {
+      // L'administrateur consulte l'intégralité du registre d'audit de tous les opérateurs
+      this.searchHistoryService.getAllSearches().subscribe({
+        next: (data) => {
+          this.loading = false;
+          if (data && data.length > 0) {
+            this.logs = data;
+          } else {
+            this.logs = this.getMockLogs();
+          }
+          this.computeKpiStats(this.logs);
+          this.applyFilter();
+        },
+        error: (err) => {
+          console.warn('Erreur API logs audit admin, affichage données fallback:', err);
+          this.loading = false;
           this.logs = this.getMockLogs();
+          this.computeKpiStats(this.logs);
+          this.applyFilter();
         }
-        this.computeKpiStats(this.logs);
-        this.applyFilter();
-      },
-      error: (err) => {
-        console.warn('Erreur API logs audit, affichage données fallback:', err);
-        this.loading = false;
-        this.logs = this.getMockLogs();
-        this.computeKpiStats(this.logs);
-        this.applyFilter();
-      }
-    });
+      });
+    } else {
+      // L'utilisateur simple (Agent Consultation) consulte uniquement son propre historique de recherche
+      const username = currentUser?.username || 'user';
+      this.searchHistoryService.getUserSearches(username).subscribe({
+        next: (data) => {
+          this.loading = false;
+          if (data && data.length > 0) {
+            this.logs = data;
+          } else {
+            this.logs = this.getMockLogs();
+          }
+          this.computeKpiStats(this.logs);
+          this.applyFilter();
+        },
+        error: (err) => {
+          console.warn('Erreur API logs audit user, affichage données fallback:', err);
+          this.loading = false;
+          this.logs = this.getMockLogs();
+          this.computeKpiStats(this.logs);
+          this.applyFilter();
+        }
+      });
+    }
   }
 
   applyFilter(): void {

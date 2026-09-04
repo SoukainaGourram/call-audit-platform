@@ -70,15 +70,24 @@ export class UserManagementComponent implements OnInit {
 
   closeModal(): void {
     this.showModal = false;
+    this.errorMsg = '';
   }
 
   saveUser(): void {
+    this.errorMsg = '';
+
+    // Nettoyage des chaînes saisies
+    this.currentUserForm.username = (this.currentUserForm.username || '').trim();
+    this.currentUserForm.fullName = (this.currentUserForm.fullName || '').trim();
+    this.currentUserForm.email = (this.currentUserForm.email || '').trim();
+
     if (!this.currentUserForm.username || !this.currentUserForm.fullName || !this.currentUserForm.email) {
-      this.errorMsg = 'Veuillez remplir tous les champs obligatoires.';
+      this.errorMsg = 'Veuillez remplir tous les champs obligatoires (Login, Nom/Prénom, Email).';
       return;
     }
+
     if (!this.editMode && !this.currentUserForm.password) {
-      this.errorMsg = 'Le mot de passe est obligatoire pour la création.';
+      this.errorMsg = 'Le mot de passe est obligatoire pour la création d\'un compte.';
       return;
     }
 
@@ -90,20 +99,34 @@ export class UserManagementComponent implements OnInit {
           this.loadUsers();
         },
         error: (err) => {
-          this.errorMsg = err.error?.message || 'Erreur lors de la mise à jour.';
+          this.handleError(err, 'Erreur lors de la mise à jour.');
         }
       });
     } else {
       this.userService.createUser(this.currentUserForm).subscribe({
         next: () => {
-          this.showSuccess('Utilisateur créé avec succès');
+          this.showSuccess(`Utilisateur "${this.currentUserForm.username}" créé avec succès`);
           this.closeModal();
           this.loadUsers();
         },
         error: (err) => {
-          this.errorMsg = err.error?.message || 'Erreur lors de la création.';
+          this.handleError(err, 'Erreur lors de la création.');
         }
       });
+    }
+  }
+
+  private handleError(err: any, fallbackMsg: string): void {
+    if (typeof err.error === 'string' && err.error.trim().length > 0) {
+      this.errorMsg = err.error;
+    } else if (err.error && err.error.message) {
+      this.errorMsg = err.error.message;
+    } else if (err.status === 409) {
+      this.errorMsg = 'Ce nom d\'utilisateur ou cette adresse email est déjà utilisé par un autre compte.';
+    } else if (err.status === 403) {
+      this.errorMsg = 'Accès refusé. Action réservée à l\'administrateur.';
+    } else {
+      this.errorMsg = fallbackMsg;
     }
   }
 

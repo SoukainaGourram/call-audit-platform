@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
     ports:
       - "5432:5432"
     volumes:
@@ -32,6 +34,9 @@ services:
       - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
       - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - USER_SERVICE_URL=http://user-service:8082
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - TZ=Africa/Casablanca
+      - JAVA_OPTS=-Duser.timezone=Africa/Casablanca
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,6 +54,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgrespassword
       - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
       - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - TZ=Africa/Casablanca
+      - JAVA_OPTS=-Duser.timezone=Africa/Casablanca
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,6 +75,9 @@ services:
       - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
       - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SEARCH_HISTORY_SERVICE_URL=http://search-history-service:8084
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - TZ=Africa/Casablanca
+      - JAVA_OPTS=-Duser.timezone=Africa/Casablanca
     depends_on:
       postgres:
         condition: service_healthy
@@ -84,6 +95,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgrespassword
       - SPRING_DATASOURCE_DRIVER=org.postgresql.Driver
       - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - TZ=Africa/Casablanca
+      - JAVA_OPTS=-Duser.timezone=Africa/Casablanca
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,6 +109,8 @@ services:
     container_name: inwi-frontend
     ports:
       - "4200:80"
+    environment:
+      - TZ=Africa/Casablanca
     depends_on:
       - auth-service
       - user-service

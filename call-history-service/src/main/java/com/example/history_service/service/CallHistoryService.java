@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.history_service.config.DataInitializer;
 import com.example.history_service.dto.CallHistoryDto;
 import com.example.history_service.entity.CallHistory;
 import com.example.history_service.repository.CallHistoryRepository;
@@ -21,17 +22,20 @@ import com.example.history_service.util.PhoneNumberUtil;
 public class CallHistoryService {
 
     private final CallHistoryRepository repository;
+    private final DataInitializer dataInitializer;
     private final RestTemplate restTemplate;
 
     @Value("${search-history-service.url:http://search-history-service:8084}")
     private String searchHistoryServiceUrl;
 
-    public CallHistoryService(CallHistoryRepository repository) {
+    public CallHistoryService(CallHistoryRepository repository, DataInitializer dataInitializer) {
         this.repository = repository;
+        this.dataInitializer = dataInitializer;
         this.restTemplate = new RestTemplate();
     }
 
     public List<CallHistoryDto> findAll() {
+        checkAndRefreshDatesIfNeeded();
         return repository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -48,9 +52,31 @@ public class CallHistoryService {
     }
 
     /**
+     * S'assure que la base de données contient toujours des données calées sur la date système actuelle (LocalDate.now())
+     */
+    private synchronized void checkAndRefreshDatesIfNeeded() {
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfToday = today.atStartOfDay();
+            LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
+
+            // Vérifier s'il existe des appels enregistrés pour aujourd'hui
+            long todayCallsCount = repository.searchCombined("", "", true, startOfToday, endOfToday, "ALL").size();
+            if (todayCallsCount == 0) {
+                System.out.println(">>> CallHistoryService: Aucune donnée trouvée pour la date actuelle (" + today + "). Re-synchronisation dynamique des dates...");
+                dataInitializer.initData();
+            }
+        } catch (Exception e) {
+            System.err.println(">>> CallHistoryService checkAndRefreshDatesIfNeeded error: " + e.getMessage());
+        }
+    }
+
+    /**
      * Recherche combinée multi-critères : Numéro exact/motif + Période dynamique (LocalDate.now()) + Type d'appel
      */
     public List<CallHistoryDto> searchCombined(String number, String dateRange, String type, String username) {
+        checkAndRefreshDatesIfNeeded();
+
         String cleanNumber = number != null ? number.trim().replaceAll("[\\s\\-\\.]", "") : "";
         String pattern = "";
         if (cleanNumber.contains("*")) {

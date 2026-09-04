@@ -56,7 +56,7 @@ public class UserProfileController {
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(summary = "Crée un nouveau compte utilisateur dans la base de données (Reserved Admin)")
+    @Operation(summary = "Crée un nouveau compte utilisateur dans la base de données")
     @PostMapping
     public ResponseEntity<UserProfile> save(@RequestBody UserProfile profile) {
         return new ResponseEntity<>(userProfileService.save(profile), HttpStatus.CREATED);

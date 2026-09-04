@@ -1,6 +1,8 @@
 package com.example.history_service.config;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,9 +24,16 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        initData();
+    }
+
+    public void initData() {
         try {
             repository.deleteAll();
-            System.out.println(">>> Call-History-Service: Initialisation des enregistrements d'appels fictifs marocains (Aujourd'hui, Hier, Ce Mois et Antérieurs)...");
+            LocalDate today = LocalDate.now();
+            LocalDate yesterday = today.minusDays(1);
+
+            System.out.println(">>> Call-History-Service: Initialisation dynamique des appels pour Aujourd'hui (" + today + "), Hier (" + yesterday + ") et Ce Mois...");
 
             Random random = new Random(42);
             List<CallHistory> calls = new ArrayList<>();
@@ -46,48 +55,53 @@ public class DataInitializer implements CommandLineRunner {
             };
 
             String[] types = {"INCOMING", "OUTGOING", "MISSED"};
-            LocalDateTime now = LocalDateTime.now();
 
-            // Génération explicite d'appels garantis pour les numéros clés sur Aujourd'hui, Hier et Ce Mois
             for (String testNum : coreNumbers) {
-                // Appels Aujourd'hui
-                for (int t = 0; t < 4; t++) {
-                    LocalDateTime startedAt = now.minusHours(t * 2 + 1).minusMinutes(15);
-                    calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), startedAt, types[t % 3], cities[random.nextInt(cities.length)], random));
+
+                // 1. AUJOURD'HUI (Strictement LocalDate.now() avec heures de la matinée/journée)
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), today.atTime(LocalTime.of(8, 15)), "INCOMING", cities[0], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), today.atTime(LocalTime.of(9, 0)), "OUTGOING", cities[1], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), today.atTime(LocalTime.of(9, 30)), "MISSED", cities[2], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), today.atTime(LocalTime.of(9, 55)), "INCOMING", cities[3], random));
+
+                // 2. HIER (Strictement LocalDate.now().minusDays(1))
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), yesterday.atTime(LocalTime.of(8, 45)), "OUTGOING", cities[4], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), yesterday.atTime(LocalTime.of(10, 20)), "INCOMING", cities[5], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), yesterday.atTime(LocalTime.of(15, 10)), "MISSED", cities[6], random));
+                calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), yesterday.atTime(LocalTime.of(19, 0)), "OUTGOING", cities[7], random));
+
+                // 3. CE MOIS-CI (Jours de la semaine écoulés dans le mois)
+                int dayInMonth = today.getDayOfMonth();
+                for (int d = 1; d <= dayInMonth; d++) {
+                    if (d != dayInMonth && (yesterday.getMonth() != today.getMonth() || d != yesterday.getDayOfMonth())) {
+                        LocalDate monthDate = today.withDayOfMonth(d);
+                        calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), monthDate.atTime(LocalTime.of(9 + (d % 8), 15)), types[d % 3], cities[random.nextInt(cities.length)], random));
+                    }
                 }
 
-                // Appels Hier
-                for (int y = 0; y < 4; y++) {
-                    LocalDateTime startedAt = now.minusDays(1).minusHours(y * 3 + 2).minusMinutes(10);
-                    calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), startedAt, types[y % 3], cities[random.nextInt(cities.length)], random));
-                }
-
-                // Appels Ce Mois-ci
-                for (int m = 0; m < 5; m++) {
-                    int dayInMonth = Math.max(1, Math.min(now.getDayOfMonth() - 1, m * 3 + 2));
-                    LocalDateTime startedAt = now.withDayOfMonth(dayInMonth).minusHours(m * 2).minusMinutes(20);
-                    calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), startedAt, types[m % 3], cities[random.nextInt(cities.length)], random));
-                }
-
-                // Appels Mois Antérieurs
-                for (int prev = 0; prev < 6; prev++) {
-                    LocalDateTime startedAt = now.minusDays(45 + prev * 15).minusHours(prev);
-                    calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), startedAt, types[prev % 3], cities[random.nextInt(cities.length)], random));
+                // 4. MOIS ANTÉRIEURS (Historique passé)
+                for (int prev = 1; prev <= 3; prev++) {
+                    LocalDate prevMonthDate = today.minusMonths(prev).withDayOfMonth(15);
+                    calls.add(createCall(testNum, generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes), prevMonthDate.atTime(LocalTime.of(14, 20)), types[prev % 3], cities[random.nextInt(cities.length)], random));
                 }
             }
 
-            // Génération de 200 autres appels aléatoires
-            for (int i = 0; i < 200; i++) {
+            // Génération de 150 autres appels aléatoires répartis
+            for (int i = 0; i < 150; i++) {
                 String caller = generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes);
                 String callee = generateMoroccanNumber(random, mobilePrefixes, landlinePrefixes);
-                LocalDateTime startedAt = now.minusDays(random.nextInt(90)).minusHours(random.nextInt(24));
-                calls.add(createCall(caller, callee, startedAt, types[random.nextInt(types.length)], cities[random.nextInt(cities.length)], random));
+                
+                int dayOffset = random.nextInt(45);
+                LocalDate callDate = today.minusDays(dayOffset);
+                LocalTime callTime = LocalTime.of(8 + random.nextInt(12), random.nextInt(60));
+                
+                calls.add(createCall(caller, callee, callDate.atTime(callTime), types[random.nextInt(types.length)], cities[random.nextInt(cities.length)], random));
             }
 
             repository.saveAll(calls);
-            System.out.println(">>> Call-History-Service: " + calls.size() + " enregistrements d'appels fictifs marocains initialisés avec succès dans PostgreSQL !");
+            System.out.println(">>> Call-History-Service: " + calls.size() + " enregistrements d'appels fictifs créés avec succès pour la date système " + today + " !");
         } catch (Exception e) {
-            System.err.println(">>> Call-History-Service DataInitializer: " + e.getMessage());
+            System.err.println(">>> Call-History-Service DataInitializer Error: " + e.getMessage());
         }
     }
 

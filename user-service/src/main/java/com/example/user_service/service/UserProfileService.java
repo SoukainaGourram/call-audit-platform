@@ -31,14 +31,33 @@ public class UserProfileService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable : " + username));
     }
 
+    /**
+     * Sauvegarde ou création fluide sans blocage (met à jour intelligemment en cas de réutilisation de login ou d'email)
+     */
     public UserProfile save(UserProfile profile) {
         if (profile.getId() == null) {
-            if (repository.existsByUsername(profile.getUsername())) {
-                throw new RuntimeException("Le nom d'utilisateur existe déjà");
+            // 1. Chercher si un profil existe déjà par username ou par email pour éviter tout conflit de contrainte d'unicité
+            UserProfile existing = repository.findByUsername(profile.getUsername())
+                    .orElseGet(() -> repository.findByEmail(profile.getEmail()).orElse(null));
+
+            if (existing != null) {
+                // Mettre à jour l'utilisateur existant de manière fluide
+                existing.setUsername(profile.getUsername());
+                existing.setFullName(profile.getFullName());
+                existing.setEmail(profile.getEmail());
+                existing.setRole(profile.getRole());
+                existing.setEnabled(profile.isEnabled());
+                if (profile.getPassword() != null && !profile.getPassword().trim().isEmpty()) {
+                    if (!profile.getPassword().startsWith("$2a$")) {
+                        existing.setPassword(passwordEncoder.encode(profile.getPassword()));
+                    } else {
+                        existing.setPassword(profile.getPassword());
+                    }
+                }
+                return repository.save(existing);
             }
-            if (repository.existsByEmail(profile.getEmail())) {
-                throw new RuntimeException("L'adresse email existe déjà");
-            }
+
+            // 2. Sinon, créer un nouveau profil
             if (profile.getPassword() != null && !profile.getPassword().startsWith("$2a$")) {
                 profile.setPassword(passwordEncoder.encode(profile.getPassword()));
             }
